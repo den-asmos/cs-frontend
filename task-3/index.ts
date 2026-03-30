@@ -3,13 +3,30 @@ class BCD {
 	private data: Uint8Array;
 
 	constructor(value: number | bigint) {
-		const digits = value
-			.toString()
-			.split("")
-			.map((digit) => parseInt(digit));
+		if (value === 0 || value === 0n) {
+			this.size = 1;
+			this.data = new Uint8Array([0]);
+			return;
+		}
+
+		const digits = [];
+
+		if (typeof value === "bigint") {
+			while (value > 0n) {
+				digits.push(Number(value % 10n));
+				value /= 10n;
+			}
+		} else {
+			while (value > 0) {
+				digits.push(value % 10);
+				value = (value / 10) | 0;
+			}
+		}
+
+		digits.reverse();
 
 		this.size = digits.length;
-		this.data = new Uint8Array(Math.ceil(this.size / 2));
+		this.data = new Uint8Array(Math.ceil(digits.length / 2));
 
 		let index = 0;
 
